@@ -9,6 +9,7 @@ today_str = datetime.today().strftime('%Y-%m-%d')
 
 
 # measurement result
+rcd_g3 = 'RG5R364B0C0GBY#HC0'
 rcd_g2 = 'RG5R256A1C0GBY#HC0'
 rcd = '5RCD0148HC3AVG8'
 spd_hub = 'SPD5118-Y1B000NCG8'
@@ -20,6 +21,7 @@ server_pmic_s = 'P8910-X0Z001FNG8'
 client_pmic = 'P8911-Y0Z001FNG8'
 
 # measurement limit part 
+rcd_g3_limit = 'DDR5 RCD RG5R364B0C0GBY#HC0'
 rcd_g2_limit = 'DDR5 RCD RG5R256A1C0GBY#HC0'
 rcd_limit = 'DDR5 RCD 5RCD0148HC3AVG8'
 spd_hub_limit = 'DDR5 Hub SPD5118-Y1B000NCG8'
@@ -31,6 +33,7 @@ client_pmic_limit = 'Clinet PMIC P8911-Y0Z001FNG8'
 # SAP code
 sap_rcd = 'R3165306'
 sap_rcd_g2 = 'R3178953'
+sap_rcd_g3 = 'R3180233'
 sap_spd_hub ='R3166344'
 sap_ts = 'R3166343'
 
@@ -43,6 +46,7 @@ sap_client_pmic = 'R3165223'
 #material gr
 mg_rcd = 'RC Driver'
 mg_rcd_g2 = 'RC Driver'
+mg_rcd_g3 = 'RC Driver'
 mg_spd_hub ='EEPROM'
 mg_ts = 'Temp sensor'
 mg_server_pmic_b = 'PMIC'
@@ -53,7 +57,8 @@ mg_client_pmic = 'PMIC'
 
 
 
-url = "c:/skhynix_oms/" #파일이 담긴 폴더의 경로명
+#url = "c:/skhynix_oms/" #파일이 담긴 폴더의 경로명
+url = os.getcwd()
 file_list = os.listdir(url) # 위 폴더의 모든 파일을 리스트로
 today_str = url+today_str
 print(today_str)
@@ -80,7 +85,7 @@ file_list_master = [file for file in file_list if fnmatch.fnmatch(file,'*Master*
 xls = pd.read_excel(file_list_master[0], sheet_name = None)
 print(xls.keys())
 
-
+df_rcd_g3_ms = pd.read_excel(file_list_master[0],sheet_name=rcd_g3,engine='openpyxl')
 df_rcd_g2_ms = pd.read_excel(file_list_master[0],sheet_name=rcd_g2,engine='openpyxl')
 df_rcd_ms = pd.read_excel(file_list_master[0],sheet_name=rcd,engine='openpyxl')
 df_spdhub_ms = pd.read_excel(file_list_master[0],sheet_name=spd_hub,engine='openpyxl')
@@ -91,6 +96,7 @@ df_spmicsmall_ms = pd.read_excel(file_list_master[0],sheet_name=server_pmic_s,en
 df_cpmic_ms = pd.read_excel(file_list_master[0],sheet_name=client_pmic,engine='openpyxl')
 
 # drop NaN row
+df_rcd_g3_ms = df_rcd_g3_ms.dropna(subset=['YIELD'])
 df_rcd_g2_ms = df_rcd_g2_ms.dropna(subset=['YIELD'])
 df_rcd_ms = df_rcd_ms.dropna(subset=['YIELD'])
 df_spdhub_ms = df_spdhub_ms.dropna(subset=['YIELD'])
@@ -114,6 +120,7 @@ df_check_final = pd.read_excel(file_check, engine='openpyxl')
 file_limit = 'SK Hynix limit file_20220907.xlsx'
 df_limit = pd.read_excel(file_limit, engine='openpyxl')
 
+df_limit_rcd_g3 = df_limit[df_limit['Part']==rcd_g3_limit]
 df_limit_rcd_g2 = df_limit[df_limit['Part']==rcd_g2_limit]
 df_limit_rcd = df_limit[df_limit['Part']==rcd_limit]
 df_limit_spd_hub = df_limit[df_limit['Part']==spd_hub_limit]
@@ -129,6 +136,7 @@ for fn in file_list_xlsx:
     df1 = pd.read_excel(fn, engine='openpyxl')
     df = pd.concat([df, df1])
 
+df_rcd_g3 = df[df['Part']==rcd_g3]
 df_rcd_g2 = df[df['Part']==rcd_g2]
 df_rcd = df[df['Part']==rcd]
 df_spd_hub = df[df['Part']==spd_hub]
@@ -140,8 +148,9 @@ df_server_pmic_s = df[df['Part']==server_pmic_s]
 df_client_pmic = df[df['Part']==client_pmic]
 
 # extract col
-df_rcd_g2 = df_rcd_g2[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB3','SB5','SB7','SB11','SB2','SB14','SHIP_date','COO','PO_number']]
-df_rcd = df_rcd[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB3','SB5','SB7','SB9','SB10','SB14','SHIP_date','COO','PO_number']]
+df_rcd_g3 = df_rcd_g3[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB2','SB3','SB6','SB10','SB11','SB12','SB13','SB14','SB15','SHIP_date','COO','PO_number']]
+df_rcd_g2 = df_rcd_g2[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB3','SB5','SB7','SB11','SB2','SB11','SB12','SB13','SB14','SB15','SHIP_date','COO','PO_number']]
+df_rcd = df_rcd[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB3','SB5','SB7','SB9','SB10','SB12','SB13','SB14','SB15','SHIP_date','COO','PO_number']]
 
 df_spd_hub = df_spd_hub[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB2','SB3','SB4','SB6','SHIP_date','COO','PO_number']]
 
@@ -159,6 +168,7 @@ df_server_pmic_s = df_server_pmic_s[['Part','Asm_lot_num','Datecode','Picked_qty
 df_client_pmic = df_client_pmic[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB2','SB3','SB4','SB7','SB8','SHIP_date','COO','PO_number']]
 
 # length of each device lot
+len_rcd_g3 = len(df_rcd_g3)
 len_rcd_g2 = len(df_rcd_g2)
 len_rcd = len(df_rcd)
 len_spd_hub = len(df_spd_hub)
@@ -173,6 +183,7 @@ df_log=pd.concat([df_log,pd.DataFrame([[today_str,len_rcd_g2,len_rcd,len_spd_hub
 df_log.to_excel(file_log,index=False)
 
 #move column name
+df_rcd_g3.columns = df_rcd_g3_ms.columns
 df_rcd_g2.columns = df_rcd_g2_ms.columns
 df_rcd.columns = df_rcd_ms.columns
 df_spd_hub.columns = df_spdhub_ms.columns
@@ -254,6 +265,94 @@ for i in range (0,len_client_pmic):
         #print(df_sbl_check)
     sbl_error_detected = 0
 
+#check RCD Gen3 limit matching
+
+
+
+df_sbl_tmp = pd.DataFrame([])
+sbl_error_detected = 0
+df_part_buf = pd.DataFrame([])
+df_limit_buf = pd.DataFrame([])
+df_part_buf = df_rcd_g3
+df_limit_buf = df_limit_rcd_g3
+col_idx_ori=df_part_buf.columns.get_loc('YIELD')
+for i in range (0,len_rcd_g3):
+    print("RCD Gen3 check")
+    #check yield
+    df_sbl_tmp = df_part_buf[['Part','Asm_lot_num','Datecode']][i:i+1]
+    #set Yield
+    SBL=df_limit_buf.iloc[0,sbl_latest_idx]*100
+    if df_part_buf.iloc[i,5] < SBL :
+        df_sbl_tmp['YIELD']=df_part_buf.iloc[i,col_idx_ori+0]
+        df_sbl_tmp['Yield limit NG'] = SBL
+        sbl_error_detected = 1
+    #set sbl2
+    SBL=df_limit_buf.iloc[1,sbl_latest_idx]
+    if df_part_buf.iloc[i,6] > SBL :
+        df_sbl_tmp['SB2']=df_part_buf.iloc[i,col_idx_ori+1]
+        df_sbl_tmp['SB2 NG'] = SBL
+        sbl_error_detected = 1
+    #set sbl3
+    SBL=df_limit_buf.iloc[2,sbl_latest_idx]
+    if df_part_buf.iloc[i,7] > SBL :
+        df_sbl_tmp['SB3']=df_part_buf.iloc[i,col_idx_ori+2]
+        df_sbl_tmp['SB3 NG'] = SBL
+        sbl_error_detected = 1
+    #set sbl6
+    SBL=df_limit_buf.iloc[3,sbl_latest_idx]
+    if df_part_buf.iloc[i,8] > SBL :
+        df_sbl_tmp['SB6']=df_part_buf.iloc[i,col_idx_ori+3]
+        df_sbl_tmp['SB6 NG'] = SBL
+        sbl_error_detected = 1
+    #set sbl10
+    SBL=df_limit_buf.iloc[4,sbl_latest_idx]
+    if df_part_buf.iloc[i,9] > SBL :
+        df_sbl_tmp['SB10']=df_part_buf.iloc[i,col_idx_ori+4]
+        df_sbl_tmp['SB10 NG'] = SBL
+        sbl_error_detected = 1
+    #set sbl11
+    SBL=df_limit_buf.iloc[5,sbl_latest_idx]
+    if df_part_buf.iloc[i,10] > SBL :
+        df_sbl_tmp['SB11']=df_part_buf.iloc[i,col_idx_ori+5]
+        df_sbl_tmp['SB11 NG'] = SBL
+        sbl_error_detected = 1
+    #set sbl12
+    SBL=df_limit_buf.iloc[6,sbl_latest_idx]
+    if df_part_buf.iloc[i,11] > SBL :
+        df_sbl_tmp['SB12']=df_part_buf.iloc[i,col_idx_ori+6]
+        df_sbl_tmp['SB12 NG'] = SBL
+        sbl_error_detected = 1        
+    #set sbl13
+    SBL=df_limit_buf.iloc[7,sbl_latest_idx]
+    if df_part_buf.iloc[i,12] > SBL :
+        df_sbl_tmp['SB13']=df_part_buf.iloc[i,col_idx_ori+6]
+        df_sbl_tmp['SB13 NG'] = SBL
+        sbl_error_detected = 1        
+    #set sbl14
+    SBL=df_limit_buf.iloc[8,sbl_latest_idx]
+    if df_part_buf.iloc[i,13] > SBL :
+        df_sbl_tmp['SB14']=df_part_buf.iloc[i,col_idx_ori+6]
+        df_sbl_tmp['SB14 NG'] = SBL
+        sbl_error_detected = 1        
+    #set sbl15
+    SBL=df_limit_buf.iloc[9,sbl_latest_idx]
+    if df_part_buf.iloc[i,14] > SBL :
+        df_sbl_tmp['SB15']=df_part_buf.iloc[i,col_idx_ori+6]
+        df_sbl_tmp['SB15 NG'] = SBL
+        sbl_error_detected = 1        
+
+
+    #check datecode
+    if not (str(df_part_buf.iloc[i,2])[0] == '2') or not(len(str(df_part_buf.iloc[i,2])) ==4):
+        df_sbl_tmp['Datecode NG'] = 'O'
+        sbl_error_detected = 1
+    if sbl_error_detected:
+        df_sbl_tmp['date'] = today_str
+        df_sbl_check = pd.concat([df_sbl_check,df_sbl_tmp])
+        print("SBL error detected")
+        print(df_sbl_check)
+    sbl_error_detected = 0
+
 #check RCD Gen2 limit matching
 
 df_sbl_tmp = pd.DataFrame([])
@@ -303,12 +402,31 @@ for i in range (0,len_rcd_g2):
         df_sbl_tmp['SB11']=df_part_buf.iloc[i,col_idx_ori+5]
         df_sbl_tmp['SB11 NG'] = SBL
         sbl_error_detected = 1
-    #set sbl14
+    #set sbl12
     SBL=df_limit_buf.iloc[6,sbl_latest_idx]
     if df_part_buf.iloc[i,11] > SBL :
+        df_sbl_tmp['SB12']=df_part_buf.iloc[i,col_idx_ori+6]
+        df_sbl_tmp['SB12 NG'] = SBL
+        sbl_error_detected = 1
+    #set sbl13
+    SBL=df_limit_buf.iloc[7,sbl_latest_idx]
+    if df_part_buf.iloc[i,12] > SBL :
+        df_sbl_tmp['SB13']=df_part_buf.iloc[i,col_idx_ori+6]
+        df_sbl_tmp['SB13 NG'] = SBL
+        sbl_error_detected = 1        
+    #set sbl14
+    SBL=df_limit_buf.iloc[8,sbl_latest_idx]
+    if df_part_buf.iloc[i,13] > SBL :
         df_sbl_tmp['SB14']=df_part_buf.iloc[i,col_idx_ori+6]
         df_sbl_tmp['SB14 NG'] = SBL
         sbl_error_detected = 1        
+    #set sbl15
+    SBL=df_limit_buf.iloc[9,sbl_latest_idx]
+    if df_part_buf.iloc[i,14] > SBL :
+        df_sbl_tmp['SB15']=df_part_buf.iloc[i,col_idx_ori+6]
+        df_sbl_tmp['SB15 NG'] = SBL
+        sbl_error_detected = 1        
+        
     #check datecode
     if not (str(df_part_buf.iloc[i,2])[0] == '2') or not(len(str(df_part_buf.iloc[i,2])) ==4):
         df_sbl_tmp['Datecode NG'] = 'O'
@@ -369,12 +487,31 @@ for i in range (0,len_rcd):
         df_sbl_tmp['SB10']=df_part_buf.iloc[i,col_idx_ori+5]
         df_sbl_tmp['SB10 NG'] = SBL
         sbl_error_detected = 1
-    #set sbl14
+    #set sbl12
     SBL=df_limit_buf.iloc[6,sbl_latest_idx]
     if df_part_buf.iloc[i,11] > SBL :
+        df_sbl_tmp['SB12']=df_part_buf.iloc[i,col_idx_ori+6]
+        df_sbl_tmp['SB12 NG'] = SBL
+        sbl_error_detected = 1        
+    #set sbl13
+    SBL=df_limit_buf.iloc[7,sbl_latest_idx]
+    if df_part_buf.iloc[i,12] > SBL :
+        df_sbl_tmp['SB13']=df_part_buf.iloc[i,col_idx_ori+6]
+        df_sbl_tmp['SB13 NG'] = SBL
+        sbl_error_detected = 1        
+    #set sbl14
+    SBL=df_limit_buf.iloc[8,sbl_latest_idx]
+    if df_part_buf.iloc[i,13] > SBL :
         df_sbl_tmp['SB14']=df_part_buf.iloc[i,col_idx_ori+6]
         df_sbl_tmp['SB14 NG'] = SBL
         sbl_error_detected = 1        
+    #set sbl12
+    SBL=df_limit_buf.iloc[9,sbl_latest_idx]
+    if df_part_buf.iloc[i,14] > SBL :
+        df_sbl_tmp['SB15']=df_part_buf.iloc[i,col_idx_ori+6]
+        df_sbl_tmp['SB15 NG'] = SBL
+        sbl_error_detected = 1        
+
     #check datecode
     if not (str(df_part_buf.iloc[i,2])[0] == '2') or not(len(str(df_part_buf.iloc[i,2])) ==4):
         df_sbl_tmp['Datecode NG'] = 'O'
@@ -656,6 +793,7 @@ df_check_final= pd.concat([df_check_final,df_sbl_check])
 df_check_final.to_excel(file_check,index=False)
 
 #merge master file and updated file
+df_rcd_g3 = pd.concat([df_rcd_g3_ms,df_rcd_g3])
 df_rcd_g2 = pd.concat([df_rcd_g2_ms,df_rcd_g2])
 df_rcd = pd.concat([df_rcd_ms,df_rcd])
 df_spd_hub = pd.concat([df_spdhub_ms,df_spd_hub])
@@ -670,6 +808,27 @@ df_client_pmic = pd.concat([df_cpmic_ms,df_client_pmic])
 
 
 #reformat 
+#Gen3 RCD
+
+df_rcd_g3_rs=df_rcd_g3.melt(id_vars=['Part','Asm_lot_num','Datecode','Picked_qty','SO','SHIP_date','COO','PO_number'])
+df_rcd_g3_rs = df_rcd_g3_rs.dropna(subset=['Part'])
+df_rcd_g3_rs['Material Gr.'] = mg_rcd_g3
+df_rcd_g3_rs['Sapcode'] = sap_rcd_g3
+df_rcd_g3_rs[['USL','LSL','Unit']] = [0,0,'%']
+df_rcd_g3_rs.loc[df_rcd_g3_rs['variable']=='YIELD','USL']=df_limit_rcd_g3.iloc[0,sbl_latest_idx]*100
+df_rcd_g3_rs.loc[df_rcd_g3_rs['variable']=='YIELD','USL'] = '4sigmas'
+
+df_rcd_g3_rs.loc[df_rcd_g3_rs['variable']=='SB2(SCAN)','USL']=df_limit_rcd_g3.iloc[1,sbl_latest_idx]
+df_rcd_g3_rs.loc[df_rcd_g3_rs['variable']=='SB3(Open/short)','USL']=df_limit_rcd_g3.iloc[2,sbl_latest_idx]
+df_rcd_g3_rs.loc[df_rcd_g3_rs['variable']=='SB6(Power Short)','USL']=df_limit_rcd_g3.iloc[3,sbl_latest_idx]
+df_rcd_g3_rs.loc[df_rcd_g3_rs['variable']=='SB10(Function)','USL']=df_limit_rcd_g3.iloc[4,sbl_latest_idx]
+df_rcd_g3_rs.loc[df_rcd_g3_rs['variable']=='SB11(Leakage_DRST)','USL']=df_limit_rcd_g3.iloc[5,sbl_latest_idx]
+df_rcd_g3_rs.loc[df_rcd_g3_rs['variable']=='SB12(Leakages_Input_Post)','USL']=df_limit_rcd_g3.iloc[6,sbl_latest_idx]
+df_rcd_g3_rs.loc[df_rcd_g3_rs['variable']=='SB13(Leakages_Output_Post)','USL']=df_limit_rcd_g3.iloc[7,sbl_latest_idx]
+df_rcd_g3_rs.loc[df_rcd_g3_rs['variable']=='SB14(Leakages_Input_Pre)','USL']=df_limit_rcd_g3.iloc[8,sbl_latest_idx]
+df_rcd_g3_rs.loc[df_rcd_g3_rs['variable']=='SB15(Leakages_Output_Pre)','USL']=df_limit_rcd_g3.iloc[9,sbl_latest_idx]
+
+#Gen2 RCD
 df_rcd_g2_rs=df_rcd_g2.melt(id_vars=['Part','Asm_lot_num','Datecode','Picked_qty','SO','SHIP_date','COO','PO_number'])
 df_rcd_g2_rs = df_rcd_g2_rs.dropna(subset=['Part'])
 df_rcd_g2_rs['Material Gr.'] = mg_rcd_g2
@@ -683,10 +842,13 @@ df_rcd_g2_rs.loc[df_rcd_g2_rs['variable']=='SB3(Open)','USL']=df_limit_rcd_g2.il
 df_rcd_g2_rs.loc[df_rcd_g2_rs['variable']=='SB5(Short)','USL']=df_limit_rcd_g2.iloc[3,sbl_latest_idx]
 df_rcd_g2_rs.loc[df_rcd_g2_rs['variable']=='SB7(IDD6S)','USL']=df_limit_rcd_g2.iloc[4,sbl_latest_idx]
 df_rcd_g2_rs.loc[df_rcd_g2_rs['variable']=='SB11(Function)','USL']=df_limit_rcd_g2.iloc[5,sbl_latest_idx]
-df_rcd_g2_rs.loc[df_rcd_g2_rs['variable']=='SB14(Leakage)','USL']=df_limit_rcd_g2.iloc[6,sbl_latest_idx]
+df_rcd_g2_rs.loc[df_rcd_g2_rs['variable']=='SB12(Leakages_Input_post)','USL']=df_limit_rcd_g2.iloc[6,sbl_latest_idx]
+df_rcd_g2_rs.loc[df_rcd_g2_rs['variable']=='SB13(Leakages_Output_post)','USL']=df_limit_rcd_g2.iloc[7,sbl_latest_idx]
+df_rcd_g2_rs.loc[df_rcd_g2_rs['variable']=='SB14(Leakages_Input_pre)','USL']=df_limit_rcd_g2.iloc[8,sbl_latest_idx]
+df_rcd_g2_rs.loc[df_rcd_g2_rs['variable']=='SB15(Leakages_Output_pre)','USL']=df_limit_rcd_g2.iloc[9,sbl_latest_idx]
 
 
-
+#Gen1 RCD
 df_rcd_rs=df_rcd.melt(id_vars=['Part','Asm_lot_num','Datecode','Picked_qty','SO','SHIP_date','COO','PO_number'])
 df_rcd_rs = df_rcd_rs.dropna(subset=['Part'])
 df_rcd_rs['Material Gr.'] = mg_rcd
@@ -700,9 +862,12 @@ df_rcd_rs.loc[df_rcd_rs['variable']=='SB5(Short)','USL']=df_limit_rcd.iloc[2,sbl
 df_rcd_rs.loc[df_rcd_rs['variable']=='SB7(IDD6S)','USL']=df_limit_rcd.iloc[3,sbl_latest_idx]
 df_rcd_rs.loc[df_rcd_rs['variable']=='SB9(Function)','USL']=df_limit_rcd.iloc[4,sbl_latest_idx]
 df_rcd_rs.loc[df_rcd_rs['variable']=='SB10(SCAN)','USL']=df_limit_rcd.iloc[5,sbl_latest_idx]
-df_rcd_rs.loc[df_rcd_rs['variable']=='SB14(Leakage)','USL']=df_limit_rcd.iloc[6,sbl_latest_idx]
+df_rcd_rs.loc[df_rcd_rs['variable']=='SB12(Leakages_Input_Post)','USL']=df_limit_rcd.iloc[6,sbl_latest_idx]
+df_rcd_rs.loc[df_rcd_rs['variable']=='SB13(Leakages_Output_Post)','USL']=df_limit_rcd.iloc[7,sbl_latest_idx]
+df_rcd_rs.loc[df_rcd_rs['variable']=='SB14(Leakages_Input_Pre)','USL']=df_limit_rcd.iloc[8,sbl_latest_idx]
+df_rcd_rs.loc[df_rcd_rs['variable']=='SB15(Leakages_Output_Pre)','USL']=df_limit_rcd.iloc[9,sbl_latest_idx]
 
-
+#SPD Hub
 df_spd_hub_rs=df_spd_hub.melt(id_vars=['Part','Asm_lot_num','Datecode','Picked_qty','SO','SHIP_date','COO','PO_number'])
 df_spd_hub_rs = df_spd_hub_rs.dropna(subset=['Part'])
 df_spd_hub_rs['Material Gr.'] = mg_spd_hub
@@ -716,7 +881,7 @@ df_spd_hub_rs.loc[df_spd_hub_rs['variable']=='SB3(Short)','USL']=df_limit_spd_hu
 df_spd_hub_rs.loc[df_spd_hub_rs['variable']=='SB4(Leakage)','USL']=df_limit_spd_hub.iloc[3,sbl_latest_idx]
 df_spd_hub_rs.loc[df_spd_hub_rs['variable']=='SB6(Function)','USL']=df_limit_spd_hub.iloc[4,sbl_latest_idx]
 
-
+#TS
 df_ts_rs=df_ts.melt(id_vars=['Part','Asm_lot_num','Datecode','Picked_qty','SO','SHIP_date','COO','PO_number'])
 df_ts_rs = df_ts_rs.dropna(subset=['Part'])
 df_ts_rs['Material Gr.'] = mg_ts
@@ -787,7 +952,7 @@ df_client_pmic_rs.loc[df_client_pmic_rs['variable']=='SB7(IDD)','USL']=df_limit_
 df_client_pmic_rs.loc[df_client_pmic_rs['variable']=='SB8(Leakage)','USL']=df_limit_client_pmic.iloc[5,sbl_latest_idx]
 
 #merget data
-df_all=pd.concat([df_rcd_g2_rs,df_rcd_rs,df_spd_hub_rs,df_ts_rs,df_server_pmic_b_rs,df_server_pmic_b1_rs,df_server_pmic_s_rs,df_client_pmic_rs])
+df_all=pd.concat([df_rcd_g3_rs,df_rcd_g2_rs,df_rcd_rs,df_spd_hub_rs,df_ts_rs,df_server_pmic_b_rs,df_server_pmic_b1_rs,df_server_pmic_s_rs,df_client_pmic_rs])
 
 df_all_1=df_all.drop(['Datecode','Picked_qty','SO','COO','PO_number'],axis=1)
 df_all_1['BP']='Reensas'
