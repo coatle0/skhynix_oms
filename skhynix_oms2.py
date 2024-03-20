@@ -4,10 +4,12 @@ import openpyxl
 import fnmatch
 from datetime import datetime
 import shutil
+import xlwings as xw
 
 today_str = datetime.today().strftime('%Y-%m-%d')
 
-
+#remove all 
+'''
 # measurement result
 rcd_g3 = 'RG5R364B0C0GBY#HC0'
 rcd_g2 = 'RG5R256A1C0GBY#HC0'
@@ -54,13 +56,13 @@ mg_server_pmic_b1 = 'PMIC'
 mg_server_pmic_s = 'PMIC'
 mg_client_pmic = 'PMIC'
 
-
+'''
 
 
 #url = "c:/skhynix_oms/" #파일이 담긴 폴더의 경로명
 url = os.getcwd()
-file_list = os.listdir(url) # 위 폴더의 모든 파일을 리스트로
-today_str = url+today_str
+ # 위 폴더의 모든 파일을 리스트로
+today_str = url+'/'+today_str
 print(today_str)
 
 if not os.path.exists(today_str):
@@ -68,6 +70,15 @@ if not os.path.exists(today_str):
 
 file_log = 'oms_log.xlsx'
 file_check = 'oms_sbl_check.xlsx'
+
+#device manage file
+fn_dev_man = 'device_man.xlsx'
+
+#format file
+fn_format = 'skhynix_format.xlsx'
+
+#list file
+file_list = os.listdir(url)
 
 file_list_arch1 = [file for file in file_list if fnmatch.fnmatch(file,'*xlsx*')]
 
@@ -78,10 +89,12 @@ if 'test2.xlsx' in file_list_arch1:
 file_list_arch2 = [file for file in file_list if fnmatch.fnmatch(file,'*pdf*')]
 
 file_list_xlsx = [file for file in file_list if fnmatch.fnmatch(file,'*yield*')]
-file_list_master = [file for file in file_list if fnmatch.fnmatch(file,'*Master*')]
+
+#remove master file
+#file_list_master = [file for file in file_list if fnmatch.fnmatch(file,'*Master*')]
 
 #read master file
-
+'''
 xls = pd.read_excel(file_list_master[0], sheet_name = None)
 print(xls.keys())
 
@@ -112,6 +125,9 @@ df = pd.DataFrame([])
 df_rcd = pd.DataFrame([])
 df_log = pd.DataFrame([])
 
+'''
+
+
 #read log file
 df_log = pd.read_excel(file_log, engine='openpyxl')
 df_check_final = pd.read_excel(file_check, engine='openpyxl')
@@ -120,6 +136,16 @@ df_check_final = pd.read_excel(file_check, engine='openpyxl')
 file_limit = 'SK Hynix limit file_20220907.xlsx'
 df_limit = pd.read_excel(file_limit, engine='openpyxl')
 
+#read device manage file
+df_dev_man = pd.read_excel(fn_dev_man, engine='openpyxl')
+
+#read format file
+
+app = xw.App(visible=False)
+wb_format = xw.Book(fn_format)
+sh_format = xw.sheets[0]
+
+'''
 df_limit_rcd_g3 = df_limit[df_limit['Part']==rcd_g3_limit]
 df_limit_rcd_g2 = df_limit[df_limit['Part']==rcd_g2_limit]
 df_limit_rcd = df_limit[df_limit['Part']==rcd_limit]
@@ -130,11 +156,8 @@ df_limit_server_pmic_d1 = df_limit[df_limit['Part']==server_pmic_d1_limit]
 df_limit_client_pmic = df_limit[df_limit['Part']==client_pmic_limit]
 #print(file_list_xlsx)
 #read xlsx files
-df = pd.DataFrame([])
 
-for fn in file_list_xlsx:
-    df1 = pd.read_excel(fn, engine='openpyxl')
-    df = pd.concat([df, df1])
+
 
 df_rcd_g3 = df[df['Part']==rcd_g3]
 df_rcd_g2 = df[df['Part']==rcd_g2]
@@ -178,10 +201,40 @@ len_server_pmic_b1 = len(df_server_pmic_b1)
 len_server_pmic_b = len(df_server_pmic_b)
 len_server_pmic_s = len(df_server_pmic_s)
 len_client_pmic = len(df_client_pmic)
+'''
+df = pd.DataFrame([])
+df_log_update = pd.DataFrame([])
 
-df_log=pd.concat([df_log,pd.DataFrame([[today_str,len_rcd_g2,len_rcd,len_spd_hub,len_ts,len_server_pmic_b,len_server_pmic_b1,len_server_pmic_s,len_client_pmic]],columns=df_log.columns)],axis=0)
+for fn in file_list_xlsx:
+    df1 = pd.read_excel(fn, engine='openpyxl')
+    df = pd.concat([df, df1])
+
+# start real change
+#identify device
+    
+for device in df_dev_man['device part number']:
+    df_device = df[df['Part']==device]
+    df_device_prop = df_dev_man[df_dev_man['device part number']==device]
+    #check data frame for devcie is empty
+    if not df_device.empty:
+        df_eval_prop1=eval(df_device_prop['sbl_str'].iloc[0])
+        df_eval_prop2 = list(df_eval_prop1)
+        df_device_buf=df_device[df_eval_prop2] 
+        print(device)
+        #print(df_device_prop)
+        print(df_device_buf)
+        len_device = len(df_device_buf)
+        df_log_update[device] = len_device
+
+
+
+
+
+#need to debug
+df_log=pd.concat([df_log,df_log_update],columns=df_log.columns),axis=0)
 df_log.to_excel(file_log,index=False)
 
+#need to check this operation
 #move column name
 df_rcd_g3.columns = df_rcd_g3_ms.columns
 df_rcd_g2.columns = df_rcd_g2_ms.columns
@@ -195,6 +248,7 @@ df_server_pmic_s.columns = df_spmicsmall_ms.columns
 df_client_pmic.columns = df_cpmic_ms.columns
 
 
+#process yield limit
 
 sbl_latest_idx = df_limit.shape[1]-1
 
