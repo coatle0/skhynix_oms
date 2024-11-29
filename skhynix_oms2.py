@@ -8,57 +8,6 @@ import xlwings as xw
 
 today_str = datetime.today().strftime('%Y-%m-%d')
 
-#remove all 
-'''
-# measurement result
-rcd_g3 = 'RG5R364B0C0GBY#HC0'
-rcd_g2 = 'RG5R256A1C0GBY#HC0'
-rcd = '5RCD0148HC3AVG8'
-spd_hub = 'SPD5118-Y1B000NCG8'
-ts = 'TS5111-Z2AHRI8'
-#server pmic D0
-server_pmic_b1 = 'P8900-X1Z001FNG8'
-server_pmic_b = 'P8900-X0Z001FNG8'
-server_pmic_s = 'P8910-X0Z001FNG8'
-client_pmic = 'P8911-Y0Z001FNG8'
-
-# measurement limit part 
-rcd_g3_limit = 'DDR5 RCD RG5R364B0C0GBY#HC0'
-rcd_g2_limit = 'DDR5 RCD RG5R256A1C0GBY#HC0'
-rcd_limit = 'DDR5 RCD 5RCD0148HC3AVG8'
-spd_hub_limit = 'DDR5 Hub SPD5118-Y1B000NCG8'
-ts_limit = 'DDR5 TS TS5111-Z2AHRI8'
-server_pmic_limit = 'Sever PMIC P8900-X0Z001FNG8 P8910-X0Z001FNG8'
-server_pmic_d1_limit = 'Sever PMIC P8900-X1Z001FNG8 P8910-X0Z001FNG8'
-client_pmic_limit = 'Clinet PMIC P8911-Y0Z001FNG8'
-
-# SAP code
-sap_rcd = 'R3165306'
-sap_rcd_g2 = 'R3178953'
-sap_rcd_g3 = 'R3180233'
-sap_spd_hub ='R3166344'
-sap_ts = 'R3166343'
-
-sap_server_pmic_b = 'R3166952'
-#server pmic D1
-sap_server_pmic_b1 = 'R3179869'
-sap_server_pmic_s = 'R3168893'
-sap_client_pmic = 'R3165223'
-
-#material gr
-mg_rcd = 'RC Driver'
-mg_rcd_g2 = 'RC Driver'
-mg_rcd_g3 = 'RC Driver'
-mg_spd_hub ='EEPROM'
-mg_ts = 'Temp sensor'
-mg_server_pmic_b = 'PMIC'
-mg_server_pmic_b1 = 'PMIC'
-mg_server_pmic_s = 'PMIC'
-mg_client_pmic = 'PMIC'
-
-'''
-
-
 #url = "c:/skhynix_oms/" #파일이 담긴 폴더의 경로명
 url = os.getcwd()
  # 위 폴더의 모든 파일을 리스트로
@@ -90,44 +39,6 @@ file_list_arch2 = [file for file in file_list if fnmatch.fnmatch(file,'*pdf*')]
 
 file_list_xlsx = [file for file in file_list if fnmatch.fnmatch(file,'*yield*')]
 
-#remove master file
-#file_list_master = [file for file in file_list if fnmatch.fnmatch(file,'*Master*')]
-
-#read master file
-'''
-xls = pd.read_excel(file_list_master[0], sheet_name = None)
-print(xls.keys())
-
-df_rcd_g3_ms = pd.read_excel(file_list_master[0],sheet_name=rcd_g3,engine='openpyxl')
-df_rcd_g2_ms = pd.read_excel(file_list_master[0],sheet_name=rcd_g2,engine='openpyxl')
-df_rcd_ms = pd.read_excel(file_list_master[0],sheet_name=rcd,engine='openpyxl')
-df_spdhub_ms = pd.read_excel(file_list_master[0],sheet_name=spd_hub,engine='openpyxl')
-df_ts_ms = pd.read_excel(file_list_master[0],sheet_name=ts,engine='openpyxl')
-df_spmicbig1_ms = pd.read_excel(file_list_master[0],sheet_name=server_pmic_b1,engine='openpyxl')
-df_spmicbig_ms = pd.read_excel(file_list_master[0],sheet_name=server_pmic_b,engine='openpyxl')
-df_spmicsmall_ms = pd.read_excel(file_list_master[0],sheet_name=server_pmic_s,engine='openpyxl')
-df_cpmic_ms = pd.read_excel(file_list_master[0],sheet_name=client_pmic,engine='openpyxl')
-
-# drop NaN row
-df_rcd_g3_ms = df_rcd_g3_ms.dropna(subset=['YIELD'])
-df_rcd_g2_ms = df_rcd_g2_ms.dropna(subset=['YIELD'])
-df_rcd_ms = df_rcd_ms.dropna(subset=['YIELD'])
-df_spdhub_ms = df_spdhub_ms.dropna(subset=['YIELD'])
-df_ts_ms = df_ts_ms.dropna(subset=['YIELD'])
-df_spmicbig1_ms = df_spmicbig1_ms.dropna(subset=['YIELD'])
-df_spmicbig_ms = df_spmicbig_ms.dropna(subset=['YIELD'])
-df_spmicsmall_ms = df_spmicsmall_ms.dropna(subset=['YIELD'])
-df_cpmic_ms = df_cpmic_ms.dropna(subset=['YIELD'])
-
-
-
-df = pd.DataFrame([])
-df_rcd = pd.DataFrame([])
-df_log = pd.DataFrame([])
-
-'''
-
-
 #read log file
 df_log = pd.read_excel(file_log, engine='openpyxl')
 df_check_final = pd.read_excel(file_check, engine='openpyxl')
@@ -145,63 +56,6 @@ app = xw.App(visible=False)
 wb_format = xw.Book(fn_format)
 sh_format = xw.sheets[0]
 
-'''
-df_limit_rcd_g3 = df_limit[df_limit['Part']==rcd_g3_limit]
-df_limit_rcd_g2 = df_limit[df_limit['Part']==rcd_g2_limit]
-df_limit_rcd = df_limit[df_limit['Part']==rcd_limit]
-df_limit_spd_hub = df_limit[df_limit['Part']==spd_hub_limit]
-df_limit_ts = df_limit[df_limit['Part']==ts_limit]
-df_limit_server_pmic = df_limit[df_limit['Part']==server_pmic_limit]
-df_limit_server_pmic_d1 = df_limit[df_limit['Part']==server_pmic_d1_limit]
-df_limit_client_pmic = df_limit[df_limit['Part']==client_pmic_limit]
-#print(file_list_xlsx)
-#read xlsx files
-
-
-
-df_rcd_g3 = df[df['Part']==rcd_g3]
-df_rcd_g2 = df[df['Part']==rcd_g2]
-df_rcd = df[df['Part']==rcd]
-df_spd_hub = df[df['Part']==spd_hub]
-df_ts = df[df['Part']==ts]
-#PMIC D1
-df_server_pmic_b1 = df[df['Part']==server_pmic_b1]
-df_server_pmic_b = df[df['Part']==server_pmic_b]
-df_server_pmic_s = df[df['Part']==server_pmic_s]
-df_client_pmic = df[df['Part']==client_pmic]
-
-# extract col
-df_rcd_g3 = df_rcd_g3[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB2','SB3','SB6','SB10','SB11','SB12','SB13','SB14','SB15','SHIP_date','COO','PO_number']]
-df_rcd_g2 = df_rcd_g2[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB3','SB5','SB7','SB11','SB2','SB11','SB12','SB13','SB14','SB15','SHIP_date','COO','PO_number']]
-df_rcd = df_rcd[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB3','SB5','SB7','SB9','SB10','SB12','SB13','SB14','SB15','SHIP_date','COO','PO_number']]
-
-df_spd_hub = df_spd_hub[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB2','SB3','SB4','SB6','SHIP_date','COO','PO_number']]
-
-df_ts = df_ts[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB1','SB2','SB3','SHIP_date','COO','PO_number']]
-
-#PMIC D1
-df_server_pmic_b1 = df_server_pmic_b1[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB2','SB3','SB4','SB8','SHIP_date','COO','PO_number']]
-df_server_pmic_b = df_server_pmic_b[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB2','SB3','SB4','SB8','SHIP_date','COO','PO_number']]
-df_server_pmic_s = df_server_pmic_s[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB2','SB3','SB4','SB8','SHIP_date','COO','PO_number']]
-
-# Q4 change SBL list
-#df_server_pmic_b = df_server_pmic_b[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB2','SB3','SB4','SB8','SHIP_date','COO','PO_number']]
-#df_server_pmic_s = df_server_pmic_s[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB2','SB3','SB4','SB8','SHIP_date','COO','PO_number']]
-
-df_client_pmic = df_client_pmic[['Part','Asm_lot_num','Datecode','Picked_qty','SO','YIELD','SB2','SB3','SB4','SB7','SB8','SHIP_date','COO','PO_number']]
-
-# length of each device lot
-len_rcd_g3 = len(df_rcd_g3)
-len_rcd_g2 = len(df_rcd_g2)
-len_rcd = len(df_rcd)
-len_spd_hub = len(df_spd_hub)
-len_ts = len(df_ts)
-#PMIC D1
-len_server_pmic_b1 = len(df_server_pmic_b1)
-len_server_pmic_b = len(df_server_pmic_b)
-len_server_pmic_s = len(df_server_pmic_s)
-len_client_pmic = len(df_client_pmic)
-'''
 df = pd.DataFrame([])
 df_log_update = pd.DataFrame([])
 
